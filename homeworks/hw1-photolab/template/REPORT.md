@@ -16,7 +16,7 @@
 
 ### 1.2. Баланс белого (`data/bright.jpg`)
 
-| Метод | Усиление B, G, R | Средние до B, G, R | Средние после B, G, R |
+| Метод | усиление B, G, R | средние до | средние после |
 |---|---|---|---|
 | grey-world | 1.137, 1.008, 0.886 | 98.6, 110.8, 126.0 | 112.1, 111.7, 111.6 |
 | white-patch (p99) | 1.25, 1.138, 1.0 | 98.6, 110.8, 126.0 | 123.1, 126.0, 126.0 |
@@ -34,10 +34,10 @@
 | Что | Значение |
 |-----|----------|
 | границы lo / hi | 175,160,40 / 0,255,255 |
-| доля маски, % | 7.6 |
+| доля маски, % | 7.67 |
 | компонент до / после морфологии | 112 / 1 |
 | дыр | 0 |
-| `ball-lamp.jpg` курса: recall / precision | Не измерено, файл отсутствует |
+| `ball-lamp.jpg` курса: recall / precision | 94.6% / 99.9% |
 
 ### 1.5. Геометрия
 
@@ -45,9 +45,9 @@
 |-----|----------|
 | поворот 30°: размер до → после, пустой холст, % | 2000×1500 → 2482×2299, 47.4% |
 | уменьшение ×0.25: PSNR naive / blur / area к Lanczos, свое фото | 33.3 / 37.2 / 40.5 дБ |
-| то же на `iu-building.jpg` | Не измерено, файл отсутствует |
+| то же на `iu-building.jpg` | 27.9 / 36.0 / 37.2 дБ |
 | выпрямление: стороны в кадре (px), `--aspect`, размер выхода | 819.4 / 1046.5 / 1129.4 / 1017.0, 0.707, 1129×1597 |
-| `poster-angle.jpg` курса: совпадение с `poster-gt.png`, % | Не измерено, файлы отсутствуют |
+| `poster-angle.jpg` курса: совпадение с `poster-gt.png`, % | 99.1 |
 
 ### 1.6. Контактный лист
 
@@ -71,7 +71,7 @@ CLAHE дает более умеренное осветление. Средня�
 
 Команда, файл, что получилось, причина, что бы помогло.
 
-Автоматический хромакей (`out/object_on_bg_sample.jpg`) плохо выделяет яблоко. Маска покрывает 4.12% кадра и содержит 4 дыры. Причина в том, что красные оттенки находятся по обе стороны границы HSV 0/179. При ручных границах H=175...0, S от 160 и закрытии 61×61 доля маски увеличилась до 7.6%, а число дыр стало равно 0. Результат улучшился, но часть тени и блика все равно теряется.
+Автоматический хромакей (`out/object_on_bg_sample.jpg`) плохо выделяет яблоко. Маска покрывает 4.27% кадра и содержит 9 дыр. Причина в том, что красные оттенки находятся по обе стороны границы HSV 0/179. При ручных границах H=175...0, S от 160 и закрытии 65×65 доля маски увеличилась до 7.67%, а число дыр стало равно 0. Результат улучшился, но часть тени и блика все равно теряется.
 
 ## 4. Команды
 
@@ -90,7 +90,7 @@ python photolab.py clahe data/dark.jpg --clip 2 --tiles 8 -o out/dark_clahe.jpg 
 
 python photolab.py chromakey data/object.jpg --bg data/bg.jpg --sample 1080,840,120,120 -o out/object_on_bg_sample.jpg --mask out/object_mask_sample.png
 
-python photolab.py chromakey data/object.jpg --bg data/bg.jpg --lo 175,160,40 --hi 0,255,255 --open 5 --close 61 --feather 2 -o out/object_on_bg.jpg --mask out/object_mask.png
+python photolab.py chromakey data/object.jpg --bg data/bg.jpg --lo 175,160,40 --hi 0,255,255 --open 5 --close 65 --feather 2 -o out/object_on_bg.jpg --mask out/object_mask.png
 
 python photolab.py rotate data/poster.jpg --deg 30 -o out/poster_rot30.jpg
 
@@ -103,6 +103,12 @@ python photolab.py resize data/text.jpg --scale 0.25 --method area --report -o o
 python photolab.py rectify data/poster.jpg --corners 1050,315,1835,550,1090,1285,115,715 --aspect 0.707 -o out/poster_front.jpg
 
 python photolab.py sheet data/dark.jpg out/dark_g05.jpg out/dark_g20.jpg out/dark_clahe.jpg data/bright.jpg out/bright_gw.jpg out/bright_wp.jpg data/object.jpg out/object_mask.png out/object_on_bg.jpg out/object_mask_sample.png out/object_on_bg_sample.jpg data/bg.jpg data/poster.jpg out/poster_front.jpg out/poster_rot30.jpg data/text.jpg out/text_x025_naive.jpg out/text_x025_blur.jpg out/text_x025.jpg --cols 4 -o out/sheet.jpg
+
+python photolab.py chromakey ../../../lectures/L03-color-histograms/demo/ball-lamp.jpg --bg ../../../lectures/L04-geometry/demo/road-cam.jpg --lo 140,121,40 --hi 168,230,255 -o out/ball_lamp_course.jpg --mask out/ball_lamp_mask_course.png
+
+python photolab.py resize ../../../lectures/L05-filtering/demo/iu-building.jpg --scale 0.25 --method area --report -o out/iu_building_x025.jpg
+
+python photolab.py rectify ../../../lectures/L04-geometry/demo/poster-angle.jpg --corners 560,330,1250,220,1290,1010,600,840 --size 640x905 -o out/poster_course_front.png
 ```
 
 ## 5. Инструменты
