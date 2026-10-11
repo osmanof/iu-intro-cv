@@ -186,10 +186,10 @@ def color_mask(bgr, lo, hi, open_k=5, close_k=9):
         hi2 = np.array((hi[0], hi[1], hi[2]), np.uint8)
         mask = cv2.bitwise_or(cv2.inRange(hsv, lo1, hi1), cv2.inRange(hsv, lo2, hi2))
     if open_k > 1:
-        kernel = np.ones((open_k, open_k), np.uint8)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (open_k, open_k))
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     if close_k > 1:
-        kernel = np.ones((close_k, close_k), np.uint8)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (close_k, close_k))
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     return mask
     # ───────────────────────────────────────────────────────────
